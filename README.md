@@ -22,7 +22,7 @@ docker build -f Dockerfile.dev -t shopware-cli-dev .
 
 #### Run Latest shopware version
 ```bash
-docker run --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -v shopware-dev_db:/app -v /path/to/MyPlugin:/app/custom/plugins/MyPlugin shopware-cli-dev
+docker run --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -v shopware-dev_db:/app -v <cwd>:/app/custom/plugins/<PluginName> shopware-cli-dev
 ```
 
 #### Run Specific shopware version
