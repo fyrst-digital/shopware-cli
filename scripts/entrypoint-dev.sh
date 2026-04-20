@@ -41,6 +41,8 @@ if [ ! -f /app/install.lock ]; then
     composer require --dev shopware/dev-tools --no-interaction --working-dir=/app
 
     sed -i 's|^DATABASE_URL=.*|DATABASE_URL="mysql://shopware:shopware@127.0.0.1:3306/shopware"|' /app/.env
+    sed -i 's|^APP_URL=.*|APP_URL="http://localhost:8000"|' /app/.env
+    sed -i 's|^PROXY_URL=.*|PROXY_URL="http://localhost:9998"|' /app/.env
 
     bin/console system:install \
         --create-database \
@@ -52,22 +54,20 @@ if [ ! -f /app/install.lock ]; then
         --skip-first-run-wizard \
         -n
 
-    bin/console framework:demodata -n --orders=0
+    bin/console framework:demodata -n --orders=0 
+    bin/console dal:refresh:index
+    bin/console cache:clear
 
     echo "Shopware installation complete."
 fi
 
 # Write Caddyfile
 cat > /etc/caddy/Caddyfile <<'CADDYFILE'
-{
-    admin off
-}
-
 :8000 {
-    root * /app/public
-    encode gzip
-    php_fastcgi 127.0.0.1:9000
-    file_server
+	root * /app/public
+	encode gzip
+	php_fastcgi 127.0.0.1:9000
+	file_server
 }
 CADDYFILE
 
@@ -93,4 +93,4 @@ php-fpm --allow-to-run-as-root -D
 
 # Run Caddy in foreground
 echo "Starting Caddy on :8000..."
-exec caddy run
+exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile

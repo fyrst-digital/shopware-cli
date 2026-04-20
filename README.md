@@ -22,32 +22,27 @@ docker build -f Dockerfile.dev -t shopware-cli-dev .
 
 #### Run Latest shopware version
 ```bash
-docker run -v shopware-data:/app -v /path/to/MyPlugin:/app/custom/plugins/MyPlugin shopware-cli-dev
+docker run --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -v shopware-dev_db:/app -v /path/to/MyPlugin:/app/custom/plugins/MyPlugin shopware-cli-dev
 ```
 
 #### Run Specific shopware version
 ```bash
-docker run -e SHOPWARE_VERSION=6.6.10.0 -v shopware-data:/app -v /path/to/MyPlugin:/app/custom/plugins/MyPlugin shopware-cli-dev
+docker run --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -e SHOPWARE_VERSION=6.6.10.0 -v shopware-dev_db:/app -v /path/to/MyPlugin:/app/custom/plugins/MyPlugin shopware-cli-dev
 ```
 
 Mounting custom plugins
 ```bash
-docker run -it --rm \
-  -p 8000:8000 \
-  -v shopware-data:/app \
-  -e SHOPWARE_VERSION=6.6.10.0 \ // optional, defaults to latest
-  -v ./my-plugin:/app/custom/plugins/my-plugin \
-  shopware-cli-dev
+docker run -it --rm --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -v shopware-dev_db:/app -e SHOPWARE_VERSION=6.6.10.0 -v ./my-plugin:/app/custom/plugins/my-plugin shopware-cli-dev
 ```
 
 You don't. For a dev environment, detached mode is usually better:
 ```bash
-docker run -d --name shopware -p 8000:8000 -v shopware-data:/app shopware-cli-dev
+docker run -d --name shopware-dev_app -p 8000:8000 -p 9998:9998 -p 5173:5173 -v shopware-dev_db:/app shopware-cli-dev
 ```
 
 Then exec in when you need to:
 ```bash
-docker exec -it shopware sh
+docker exec -it shopware-dev_app bash
 ```
 
 
